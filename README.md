@@ -1,36 +1,132 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Smart Blinds Survey Web Application
 
-## Getting Started
+A Next.js web application for collecting expert feedback on sustainable motorized blind concepts. Energy specialists rate 12 innovative blind designs across weighted criteria, and their responses are aggregated into an admin dashboard.
 
-First, run the development server:
+## 🚀 Quick Start
 
 ```bash
+cd survey-app
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📄 Pages
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Route | Description |
+|-------|-------------|
+| `/` | Landing page with project pitch and survey overview |
+| `/survey` | Rate all 12 blind concepts across 4 categories |
+| `/results` | Your personal results (localStorage) |
+| `/admin` | **📊 Aggregated results from all respondents** |
 
-## Learn More
+## 🎯 The Concept
 
-To learn more about Next.js, take a look at the following resources:
+We're developing **motorized blinds that automatically adapt** to:
+- 🌡️ Temperature changes (preserve cold/capture warmth)
+- ☁️ Cloud cover (avoid constant hunting)
+- ⚡ Energy efficiency (minimize motor cycles)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This survey helps determine which underlying blind mechanism to use as our automation platform.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📋 Rating Categories
 
-## Deploy on Vercel
+Each concept is rated 1-10 on these weighted criteria:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Category | Weight | Focus |
+|----------|--------|-------|
+| **Retrofit & Plug-Play** | 30% | DIY installation in Indian context |
+| **Design Integrity** | 30% | 8 sub-principles (functionality, durability, etc.) |
+| **Net-Zero Impact** | 30% | Quantifiable energy/water savings |
+| **Feasibility** | 10% | Realistic execution with available resources |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Critical Failure Rule
+If **Functionality** or **Durability** scores below 4 in Design Integrity, the entire category is capped at 4.
+
+## 🏗️ Project Structure
+
+```
+survey-app/
+├── data/
+│   └── submissions.json      # Stored survey responses
+├── public/
+│   └── images/               # 12 concept images (1.png - 12.png)
+├── src/
+│   ├── app/
+│   │   ├── page.tsx          # Landing page
+│   │   ├── survey/           # Survey flow
+│   │   ├── results/          # Personal results
+│   │   ├── admin/            # Aggregated dashboard
+│   │   └── api/
+│   │       ├── submissions/  # POST/GET submissions
+│   │       └── results/      # GET aggregated stats
+│   ├── components/
+│   │   ├── IdeaCard.tsx      # Display blind concept
+│   │   ├── RatingSlider.tsx  # 1-10 slider input
+│   │   ├── CategoryRating.tsx# Category with sliders
+│   │   └── ResultsChart.tsx  # Rankings visualization
+│   ├── data/
+│   │   ├── ideas.ts          # 12 blind concepts
+│   │   └── categories.ts     # Rating criteria
+│   └── hooks/
+│       └── useSurvey.ts      # State management
+```
+
+## 🔌 API Endpoints
+
+### `POST /api/submissions`
+Save a new survey submission.
+
+```json
+{
+  "ratings": {
+    "1": { "retrofit": 8, "design": {...}, "netzero": 7, "feasibility": 9 },
+    "2": { ... }
+  }
+}
+```
+
+### `GET /api/submissions`
+Retrieve all submissions (raw data).
+
+### `GET /api/results`
+Get aggregated statistics:
+- Total respondents
+- Idea rankings by weighted score
+- Category averages across all submissions
+- Recent submission timestamps
+
+## 💾 Data Storage
+
+Survey responses are stored in `data/submissions.json`. Each submission includes:
+- Unique ID
+- Timestamp
+- All ratings per idea
+
+## 🎨 Design Features
+
+- Premium dark theme with glassmorphism
+- Animated landing page mockup
+- Color-coded score feedback (red→green)
+- Responsive layout for all devices
+- LocalStorage for survey progress
+
+## 📊 For Survey Administrators
+
+1. Share the survey URL with energy specialists
+2. They complete the survey at `/survey`
+3. View aggregated results at `/admin`
+4. Rankings and statistics update in real-time
+5. Raw data available at `/api/submissions`
+
+## 🛠️ Technologies
+
+- **Next.js 16** with App Router
+- **TypeScript**
+- **CSS Modules** (no Tailwind)
+- **File-based JSON storage**
+
+## 📝 License
+
+MIT

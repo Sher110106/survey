@@ -1,0 +1,130 @@
+.category {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.category:hover {
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.criticalFailure {
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.1);
+}
+
+.categoryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 24px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.categoryHeader:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.categoryInfo {
+  flex: 1;
+}
+
+.categoryName {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0 0 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.weight {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #60a5fa;
+  background: rgba(59, 130, 246, 0.15);
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.categoryDescription {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.categoryScore {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.scoreValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  min-width: 40px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.expandIcon {
+  font-size: 0.8rem;
+  color: #64748b;
+  transition: transform 0.2s ease;
+}
+
+.criticalWarning {
+  background: rgba(239, 68, 68, 0.1);
+  border-top: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 12px 24px;
+  font-size: 0.85rem;
+  color: #fca5a5;
+  font-weight: 500;
+}
+
+.subPrinciples,
+.ratingContent {
+  padding: 0 24px 24px;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.anchors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+.anchor {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.4;
+}
+
+.anchorDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.subGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .subGrid {
+    grid-template-columns: 1fr;
+  }
+}
