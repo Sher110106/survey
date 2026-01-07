@@ -1,18 +1,5 @@
 {
-  "submissions": [
-    {
-      "id": "sub_1767628982149_1awnwz3td",
-      "timestamp": "2026-01-05T16:03:02.150Z",
-      "ratings": {
-        "1": {
-          "feasibility": 7
-        },
-        "2": {
-          "retrofit": 6
-        }
-      }
-    }
-  ],
-  "totalCount": 1,
-  "lastUpdated": "2026-01-05T16:03:02.150Z"
+  "submissions": [],
+  "totalCount": 0,
+  "lastUpdated": "2026-01-07T11:42:31.502Z"
 }

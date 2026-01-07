@@ -77,3 +77,24 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to save submission' }, { status: 500 });
   }
 }
+
+// DELETE - Reset all submissions
+export async function DELETE() {
+  try {
+    const resetData: SubmissionsData = {
+      submissions: [],
+      totalCount: 0,
+      lastUpdated: new Date().toISOString()
+    };
+
+    await fs.writeFile(DATA_FILE, JSON.stringify(resetData, null, 2));
+
+    return NextResponse.json({ 
+      success: true, 
+      message: 'All submissions have been reset' 
+    });
+  } catch (error) {
+    console.error('Error resetting submissions:', error);
+    return NextResponse.json({ error: 'Failed to reset submissions' }, { status: 500 });
+  }
+}

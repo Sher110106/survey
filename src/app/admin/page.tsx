@@ -48,6 +48,8 @@ export default function AdminResultsPage() {
   const [data, setData] = useState<AggregatedResults | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   useEffect(() => {
     fetchResults();
@@ -64,6 +66,42 @@ export default function AdminResultsPage() {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownloadJSON = async () => {
+    try {
+      const response = await fetch('/api/submissions');
+      if (!response.ok) throw new Error('Failed to fetch data');
+      const jsonData = await response.json();
+      
+      const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `survey-results-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Download failed:', err);
+      alert('Failed to download JSON data');
+    }
+  };
+
+  const handleResetResults = async () => {
+    try {
+      setIsResetting(true);
+      const response = await fetch('/api/submissions', { method: 'DELETE' });
+      if (!response.ok) throw new Error('Failed to reset results');
+      setShowResetModal(false);
+      await fetchResults();
+    } catch (err) {
+      console.error('Reset failed:', err);
+      alert('Failed to reset results');
+    } finally {
+      setIsResetting(false);
     }
   };
 
@@ -116,14 +154,46 @@ export default function AdminResultsPage() {
 
   return (
     <main className={styles.main}>
+      {/* Reset Confirmation Modal */}
+      {showResetModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <div className={styles.modalIcon}>⚠️</div>
+            <h3 className={styles.modalTitle}>Reset All Results?</h3>
+            <p className={styles.modalText}>
+              This action will permanently delete all survey submissions. 
+              This cannot be undone.
+            </p>
+            <div className={styles.modalActions}>
+              <button 
+                className={styles.cancelButton}
+                onClick={() => setShowResetModal(false)}
+                disabled={isResetting}
+              >
+                Cancel
+              </button>
+              <button 
+                className={styles.confirmButton}
+                onClick={handleResetResults}
+                disabled={isResetting}
+              >
+                {isResetting ? 'Resetting...' : 'Yes, Reset All'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <header className={styles.header}>
         <Link href="/" className={styles.logo}>
           ← Home
         </Link>
         <h1 className={styles.title}>📊 Overall Results Dashboard</h1>
-        <button onClick={fetchResults} className={styles.refreshButton}>
-          🔄 Refresh
-        </button>
+        <div className={styles.headerActions}>
+          <button onClick={fetchResults} className={styles.refreshButton}>
+            🔄 Refresh
+          </button>
+        </div>
       </header>
 
       <div className={styles.container}>
@@ -273,6 +343,25 @@ export default function AdminResultsPage() {
             </div>
           </section>
         )}
+
+        {/* Admin Actions */}
+        <section className={styles.adminActionsSection}>
+          <h3>⚙️ Admin Actions</h3>
+          <div className={styles.actionButtons}>
+            <button 
+              className={styles.downloadButton}
+              onClick={handleDownloadJSON}
+            >
+              📥 Download JSON
+            </button>
+            <button 
+              className={styles.resetButton}
+              onClick={() => setShowResetModal(true)}
+            >
+              🗑️ Reset Results
+            </button>
+          </div>
+        </section>
 
         {/* Export Info */}
         <section className={styles.exportSection}>
