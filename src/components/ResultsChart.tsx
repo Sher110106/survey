@@ -24,26 +24,17 @@ export default function ResultsChart({ scores }: ResultsChartProps) {
   const sortedScores = [...scores].sort((a, b) => b.totalScore - a.totalScore);
   const maxScore = 10;
 
-  const getScoreColor = (score: number) => {
-    if (score <= 3) return '#ef4444';
-    if (score <= 5) return '#f59e0b';
-    if (score <= 7) return '#eab308';
-    if (score <= 8.5) return '#84cc16';
-    return '#22c55e';
-  };
-
-  const getRankBadge = (index: number) => {
-    if (index === 0) return { emoji: '🥇', label: '1st' };
-    if (index === 1) return { emoji: '🥈', label: '2nd' };
-    if (index === 2) return { emoji: '🥉', label: '3rd' };
-    return { emoji: '', label: `${index + 1}th` };
+  const getRankLabel = (index: number) => {
+    if (index === 0) return '1st';
+    if (index === 1) return '2nd';
+    if (index === 2) return '3rd';
+    return `${index + 1}th`;
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.rankingList}>
         {sortedScores.map((score, index) => {
-          const rank = getRankBadge(index);
           const percentage = (score.totalScore / maxScore) * 100;
           
           return (
@@ -53,7 +44,7 @@ export default function ResultsChart({ scores }: ResultsChartProps) {
             >
               <div className={styles.rankInfo}>
                 <span className={styles.rank}>
-                  {rank.emoji} {rank.label}
+                  {getRankLabel(index)}
                 </span>
                 <span className={styles.ideaName}>{score.name}</span>
               </div>
@@ -61,10 +52,7 @@ export default function ResultsChart({ scores }: ResultsChartProps) {
               <div className={styles.scoreBar}>
                 <div 
                   className={styles.scoreBarFill}
-                  style={{ 
-                    width: `${percentage}%`,
-                    background: `linear-gradient(90deg, ${getScoreColor(score.totalScore)}, ${getScoreColor(score.totalScore)}88)`
-                  }}
+                  style={{ width: `${percentage}%` }}
                 />
                 <span className={styles.scoreValue}>
                   {score.totalScore.toFixed(1)}
@@ -75,10 +63,7 @@ export default function ResultsChart({ scores }: ResultsChartProps) {
                 {Object.entries(score.categoryScores).map(([catId, catScore]) => (
                   <div key={catId} className={styles.categoryChip}>
                     <span className={styles.categoryLabel}>{categoryLabels[catId]}</span>
-                    <span 
-                      className={styles.categoryValue}
-                      style={{ color: getScoreColor(catScore) }}
-                    >
+                    <span className={styles.categoryValue}>
                       {catScore.toFixed(1)}
                     </span>
                   </div>
@@ -90,27 +75,11 @@ export default function ResultsChart({ scores }: ResultsChartProps) {
       </div>
 
       <div className={styles.legend}>
-        <h4 className={styles.legendTitle}>Score Legend</h4>
+        <h4 className={styles.legendTitle}>Score Range</h4>
         <div className={styles.legendItems}>
           <div className={styles.legendItem}>
-            <span className={styles.legendColor} style={{ background: '#22c55e' }}></span>
-            <span>Excellent (8.5-10)</span>
-          </div>
-          <div className={styles.legendItem}>
-            <span className={styles.legendColor} style={{ background: '#84cc16' }}></span>
-            <span>Very Good (7-8.5)</span>
-          </div>
-          <div className={styles.legendItem}>
-            <span className={styles.legendColor} style={{ background: '#eab308' }}></span>
-            <span>Good (5-7)</span>
-          </div>
-          <div className={styles.legendItem}>
-            <span className={styles.legendColor} style={{ background: '#f59e0b' }}></span>
-            <span>Fair (3-5)</span>
-          </div>
-          <div className={styles.legendItem}>
-            <span className={styles.legendColor} style={{ background: '#ef4444' }}></span>
-            <span>Poor (1-3)</span>
+            <span className={styles.legendColor}></span>
+            <span>Higher scores indicate better alignment with criteria</span>
           </div>
         </div>
       </div>

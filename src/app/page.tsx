@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Thermometer, Cloud, Zap, ArrowRight } from 'lucide-react';
 import styles from './page.module.css';
 
 export default function Home() {
@@ -19,21 +20,27 @@ export default function Home() {
           
           <div className={styles.features}>
             <div className={styles.feature}>
-              <span className={styles.featureIcon}>🌡️</span>
+              <span className={styles.featureIcon}>
+                <Thermometer size={24} strokeWidth={1.5} />
+              </span>
               <div>
                 <h3>Temperature Aware</h3>
                 <p>Lower blinds to preserve cool air, raise them to capture warmth</p>
               </div>
             </div>
             <div className={styles.feature}>
-              <span className={styles.featureIcon}>☁️</span>
+              <span className={styles.featureIcon}>
+                <Cloud size={24} strokeWidth={1.5} />
+              </span>
               <div>
                 <h3>Cloud Responsive</h3>
                 <p>Smart adjustments prevent constant hunting when clouds pass</p>
               </div>
             </div>
             <div className={styles.feature}>
-              <span className={styles.featureIcon}>⚡</span>
+              <span className={styles.featureIcon}>
+                <Zap size={24} strokeWidth={1.5} />
+              </span>
               <div>
                 <h3>Energy Efficient</h3>
                 <p>Minimize motor cycles while maximizing climate benefits</p>
@@ -89,7 +96,7 @@ export default function Home() {
           </p>
           <Link href="/survey" className={styles.startButton}>
             Start the Survey
-            <span className={styles.arrow}>→</span>
+            <ArrowRight size={18} strokeWidth={2} />
           </Link>
           <Link href="/results" className={styles.resultsLink}>
             or view current results

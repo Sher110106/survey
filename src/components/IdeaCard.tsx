@@ -1,5 +1,6 @@
 'use client';
 
+import { Bot, Check, X } from 'lucide-react';
 import { Idea } from '@/data/ideas';
 import styles from './IdeaCard.module.css';
 
@@ -32,13 +33,19 @@ export default function IdeaCard({ idea, index, total }: IdeaCardProps) {
           <p className={styles.description}>{idea.description}</p>
           
           <div className={styles.automationContext}>
-            <span className={styles.automationLabel}>🤖 Automation Potential</span>
+            <span className={styles.automationLabel}>
+              <Bot size={14} strokeWidth={1.5} />
+              Automation Potential
+            </span>
             <p>{idea.automationContext}</p>
           </div>
           
           <div className={styles.prosConsContainer}>
             <div className={styles.prosSection}>
-              <h4 className={styles.prosTitle}>✓ Pros</h4>
+              <h4 className={styles.prosTitle}>
+                <Check size={14} strokeWidth={2} />
+                Pros
+              </h4>
               <ul className={styles.list}>
                 {idea.pros.map((pro, i) => (
                   <li key={i} className={styles.proItem}>{pro}</li>
@@ -47,7 +54,10 @@ export default function IdeaCard({ idea, index, total }: IdeaCardProps) {
             </div>
             
             <div className={styles.consSection}>
-              <h4 className={styles.consTitle}>✗ Cons</h4>
+              <h4 className={styles.consTitle}>
+                <X size={14} strokeWidth={2} />
+                Cons
+              </h4>
               <ul className={styles.list}>
                 {idea.cons.map((con, i) => (
                   <li key={i} className={styles.conItem}>{con}</li>

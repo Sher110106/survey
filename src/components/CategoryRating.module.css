@@ -1,18 +1,17 @@
 .category {
-  background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
-  border-radius: 16px;
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: transparent;
+  border-radius: 12px;
+  border: 1px solid var(--border);
   overflow: hidden;
   transition: all 0.2s ease;
 }
 
 .category:hover {
-  border-color: rgba(148, 163, 184, 0.2);
+  border-color: var(--border-hover);
 }
 
 .criticalFailure {
-  border-color: rgba(239, 68, 68, 0.4);
-  box-shadow: 0 0 30px rgba(239, 68, 68, 0.1);
+  border-color: var(--foreground);
 }
 
 .categoryHeader {
@@ -25,7 +24,7 @@
 }
 
 .categoryHeader:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--card-bg);
 }
 
 .categoryInfo {
@@ -33,9 +32,9 @@
 }
 
 .categoryName {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #f1f5f9;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
   margin: 0 0 6px 0;
   display: flex;
   align-items: center;
@@ -43,17 +42,17 @@
 }
 
 .weight {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  color: #60a5fa;
-  background: rgba(59, 130, 246, 0.15);
+  color: var(--muted);
+  background: var(--card-bg);
   padding: 3px 10px;
   border-radius: 12px;
 }
 
 .categoryDescription {
-  font-size: 0.85rem;
-  color: #94a3b8;
+  font-size: 0.8rem;
+  color: var(--muted);
   margin: 0;
   line-height: 1.4;
 }
@@ -65,33 +64,33 @@
 }
 
 .scoreValue {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: #f1f5f9;
+  color: var(--foreground);
   min-width: 40px;
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
 .expandIcon {
-  font-size: 0.8rem;
-  color: #64748b;
+  font-size: 0.75rem;
+  color: var(--muted);
   transition: transform 0.2s ease;
 }
 
 .criticalWarning {
-  background: rgba(239, 68, 68, 0.1);
-  border-top: 1px solid rgba(239, 68, 68, 0.2);
+  background: var(--card-bg);
+  border-top: 1px solid var(--border);
   padding: 12px 24px;
-  font-size: 0.85rem;
-  color: #fca5a5;
+  font-size: 0.8rem;
+  color: var(--foreground);
   font-weight: 500;
 }
 
 .subPrinciples,
 .ratingContent {
   padding: 0 24px 24px;
-  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  border-top: 1px solid var(--border);
 }
 
 .anchors {
@@ -102,8 +101,8 @@
 }
 
 .anchor {
-  font-size: 0.75rem;
-  color: #94a3b8;
+  font-size: 0.7rem;
+  color: var(--muted);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -111,10 +110,12 @@
 }
 
 .anchorDot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
+  background: var(--foreground);
+  opacity: 0.5;
 }
 
 .subGrid {

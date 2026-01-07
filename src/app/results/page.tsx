@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Trophy, BarChart2, FileText, Info, RefreshCw, ArrowLeft, ArrowRight } from 'lucide-react';
 import { useSurvey } from '@/hooks/useSurvey';
 import ResultsChart from '@/components/ResultsChart';
 import styles from './page.module.css';
@@ -44,18 +45,22 @@ export default function ResultsPage() {
     <main className={styles.main}>
       <header className={styles.header}>
         <Link href="/" className={styles.logo}>
-          ← Home
+          <ArrowLeft size={16} strokeWidth={2} />
+          Home
         </Link>
         <h1 className={styles.title}>Survey Results</h1>
         <Link href="/survey" className={styles.surveyLink}>
-          Continue Survey →
+          Continue Survey
+          <ArrowRight size={14} strokeWidth={2} />
         </Link>
       </header>
 
       <div className={styles.container}>
         <section className={styles.summaryCards}>
           <div className={styles.summaryCard}>
-            <span className={styles.cardIcon}>🏆</span>
+            <span className={styles.cardIcon}>
+              <Trophy size={24} strokeWidth={1.5} />
+            </span>
             <div className={styles.cardContent}>
               <span className={styles.cardLabel}>Top Rated Concept</span>
               <span className={styles.cardValue}>{topIdea?.name || 'N/A'}</span>
@@ -64,7 +69,9 @@ export default function ResultsPage() {
           </div>
           
           <div className={styles.summaryCard}>
-            <span className={styles.cardIcon}>📊</span>
+            <span className={styles.cardIcon}>
+              <BarChart2 size={24} strokeWidth={1.5} />
+            </span>
             <div className={styles.cardContent}>
               <span className={styles.cardLabel}>Average Score</span>
               <span className={styles.cardValue}>{averageScore}/10</span>
@@ -73,7 +80,9 @@ export default function ResultsPage() {
           </div>
           
           <div className={styles.summaryCard}>
-            <span className={styles.cardIcon}>📝</span>
+            <span className={styles.cardIcon}>
+              <FileText size={24} strokeWidth={1.5} />
+            </span>
             <div className={styles.cardContent}>
               <span className={styles.cardLabel}>Ideas Reviewed</span>
               <span className={styles.cardValue}>{scores.length}</span>
@@ -83,7 +92,9 @@ export default function ResultsPage() {
         </section>
 
         <section className={styles.infoNote}>
-          <div className={styles.noteIcon}>ℹ️</div>
+          <div className={styles.noteIcon}>
+            <Info size={18} strokeWidth={1.5} />
+          </div>
           <div className={styles.noteContent}>
             <strong>Note:</strong> All ideas default to 10/10 until rated. As you rate each concept 
             in the survey, the scores will update to reflect your actual ratings.
@@ -100,7 +111,8 @@ export default function ResultsPage() {
 
         <section className={styles.actions}>
           <button onClick={handleReset} className={styles.resetButton}>
-            🔄 Reset All Ratings
+            <RefreshCw size={16} strokeWidth={2} />
+            Reset All Ratings
           </button>
         </section>
       </div>
