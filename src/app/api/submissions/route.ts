@@ -60,7 +60,8 @@ async function readData(): Promise<SubmissionsData> {
     method: 'GET',
     headers: {
       'X-Master-Key': MASTER_KEY!
-    }
+    },
+    cache: 'no-store'
   });
 
   if (!response.ok) {
@@ -99,17 +100,19 @@ export async function GET() {
   try {
     // Detailed debug logging for Vercel
     const maskedKey = MASTER_KEY ? `${MASTER_KEY.substring(0, 5)}...${MASTER_KEY.substring(MASTER_KEY.length - 5)}` : 'NOT_SET';
-    const fetchUrl = `${JSONBIN_API_URL}/${BIN_ID}/latest`;
+    const cleanBinId = BIN_ID?.trim().replace(/['"]/g, '');
+    const fetchUrl = `${JSONBIN_API_URL}/${cleanBinId}/latest`;
     
     console.log('DEBUG - MASTER_KEY (masked):', maskedKey);
-    console.log('DEBUG - BIN_ID:', BIN_ID || 'NOT_SET');
+    console.log('DEBUG - BIN_ID raw:', BIN_ID || 'NOT_SET');
+    console.log('DEBUG - BIN_ID clean:', cleanBinId || 'NOT_SET');
     console.log('DEBUG - Fetch URL:', fetchUrl);
     
     if (!MASTER_KEY) {
       return NextResponse.json({ error: 'JSONBIN_ACCESS_KEY not configured' }, { status: 500 });
     }
 
-    if (!BIN_ID) {
+    if (!cleanBinId) {
       return NextResponse.json({ 
         error: 'JSONBIN_BIN_ID not configured',
         debug: {

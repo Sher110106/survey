@@ -37,7 +37,8 @@ async function getSubmissions(): Promise<SubmissionsData> {
       method: 'GET',
       headers: {
         'X-Master-Key': MASTER_KEY
-      }
+      },
+      cache: 'no-store'
     });
 
     if (!response.ok) {
