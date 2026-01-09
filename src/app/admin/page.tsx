@@ -385,7 +385,7 @@ export default function AdminResultsPage() {
             <Database size={16} strokeWidth={2} />
             Data Storage
           </h3>
-          <p>All submissions are stored in: <code>data/submissions.json</code></p>
+          <p>All submissions are stored in: <code>JSONBin.io (External Cloud Storage)</code></p>
           <p>Use the API endpoint <code>/api/results</code> to fetch aggregated data programmatically.</p>
         </section>
       </div>

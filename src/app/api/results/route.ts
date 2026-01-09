@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
 import { ideas } from '@/data/ideas';
 import { categories, DEFAULT_SCORE } from '@/data/categories';
 
-const DATA_FILE = path.join(process.cwd(), 'data', 'submissions.json');
+// JSONBin.io configuration
+const JSONBIN_API_URL = 'https://api.jsonbin.io/v3/b';
+const MASTER_KEY = process.env.JSONBIN_ACCESS_KEY;
+const BIN_ID = process.env.JSONBIN_BIN_ID;
 
 interface Submission {
   id: string;
@@ -27,10 +28,27 @@ interface IdeaStats {
 }
 
 async function getSubmissions(): Promise<SubmissionsData> {
+  if (!MASTER_KEY || !BIN_ID) {
+    return { submissions: [], totalCount: 0, lastUpdated: new Date().toISOString() };
+  }
+
   try {
-    const data = await fs.readFile(DATA_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch {
+    const response = await fetch(`${JSONBIN_API_URL}/${BIN_ID}/latest`, {
+      method: 'GET',
+      headers: {
+        'X-Master-Key': MASTER_KEY
+      }
+    });
+
+    if (!response.ok) {
+      console.error('Failed to read from JSONBin:', response.statusText);
+      return { submissions: [], totalCount: 0, lastUpdated: new Date().toISOString() };
+    }
+
+    const result = await response.json();
+    return result.record as SubmissionsData;
+  } catch (error) {
+    console.error('Error fetching from JSONBin:', error);
     return { submissions: [], totalCount: 0, lastUpdated: new Date().toISOString() };
   }
 }
