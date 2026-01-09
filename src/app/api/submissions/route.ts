@@ -65,8 +65,8 @@ async function readData(): Promise<SubmissionsData> {
   });
 
   if (!response.ok) {
-    console.error('Failed to read from JSONBin:', response.statusText);
-    return getInitialData();
+    const errorBody = await response.text();
+    throw new Error(`JSONBin Fetch Error: ${response.status} ${response.statusText} - ${errorBody}`);
   }
 
   const result = await response.json();
@@ -128,14 +128,23 @@ export async function GET() {
     return NextResponse.json({
       ...data,
       _debug: {
-        binIdUsed: BIN_ID,
-        masterKeyExists: !!MASTER_KEY,
+        binIdUsed: cleanBinId,
+        masterKeyMasked: maskedKey,
+        masterKeyLength: MASTER_KEY?.length,
         fetchUrl: fetchUrl
       }
     });
   } catch (error) {
     console.error('Error reading submissions:', error);
-    return NextResponse.json({ error: 'Failed to read submissions' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to read submissions',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      debug: {
+        binIdUsed: BIN_ID,
+        masterKeyMasked: MASTER_KEY ? `${MASTER_KEY.substring(0, 5)}...${MASTER_KEY.substring(MASTER_KEY.length - 5)}` : 'NOT_SET',
+        masterKeyLength: MASTER_KEY?.length,
+      }
+    }, { status: 500 });
   }
 }
 
