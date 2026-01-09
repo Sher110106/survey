@@ -97,9 +97,13 @@ async function writeData(data: SubmissionsData, binId?: string): Promise<void> {
 // GET - Retrieve all submissions
 export async function GET() {
   try {
-    // Debug logging for Vercel
-    console.log('ENV CHECK - MASTER_KEY exists:', !!MASTER_KEY);
-    console.log('ENV CHECK - BIN_ID:', BIN_ID || 'NOT SET');
+    // Detailed debug logging for Vercel
+    const maskedKey = MASTER_KEY ? `${MASTER_KEY.substring(0, 5)}...${MASTER_KEY.substring(MASTER_KEY.length - 5)}` : 'NOT_SET';
+    const fetchUrl = `${JSONBIN_API_URL}/${BIN_ID}/latest`;
+    
+    console.log('DEBUG - MASTER_KEY (masked):', maskedKey);
+    console.log('DEBUG - BIN_ID:', BIN_ID || 'NOT_SET');
+    console.log('DEBUG - Fetch URL:', fetchUrl);
     
     if (!MASTER_KEY) {
       return NextResponse.json({ error: 'JSONBIN_ACCESS_KEY not configured' }, { status: 500 });
@@ -109,14 +113,23 @@ export async function GET() {
       return NextResponse.json({ 
         error: 'JSONBIN_BIN_ID not configured',
         debug: {
-          masterKeyExists: !!MASTER_KEY,
+          masterKeyMasked: maskedKey,
           binId: BIN_ID || 'undefined'
         }
       }, { status: 500 });
     }
 
     const data = await readData();
-    return NextResponse.json(data);
+    
+    // Adding debug info to successful response too for easier diagnosis
+    return NextResponse.json({
+      ...data,
+      _debug: {
+        binIdUsed: BIN_ID,
+        masterKeyExists: !!MASTER_KEY,
+        fetchUrl: fetchUrl
+      }
+    });
   } catch (error) {
     console.error('Error reading submissions:', error);
     return NextResponse.json({ error: 'Failed to read submissions' }, { status: 500 });
