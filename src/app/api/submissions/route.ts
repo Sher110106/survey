@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
 
-const DATA_FILE = path.join(process.cwd(), 'data', 'submissions.json');
+// JSONBin.io configuration
+const JSONBIN_API_URL = 'https://api.jsonbin.io/v3/b';
+const MASTER_KEY = process.env.JSONBIN_ACCESS_KEY;
+
+// You'll need to create a bin first and set this, or we'll create one automatically
+// After first run, set this in .env.local as JSONBIN_BIN_ID
+const BIN_ID = process.env.JSONBIN_BIN_ID;
 
 interface Submission {
   id: string;
@@ -16,26 +20,88 @@ interface SubmissionsData {
   lastUpdated: string;
 }
 
-async function ensureDataFile(): Promise<SubmissionsData> {
-  try {
-    await fs.mkdir(path.dirname(DATA_FILE), { recursive: true });
-    const data = await fs.readFile(DATA_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch {
-    const initial: SubmissionsData = {
-      submissions: [],
-      totalCount: 0,
-      lastUpdated: new Date().toISOString()
-    };
-    await fs.writeFile(DATA_FILE, JSON.stringify(initial, null, 2));
-    return initial;
+const getInitialData = (): SubmissionsData => ({
+  submissions: [],
+  totalCount: 0,
+  lastUpdated: new Date().toISOString()
+});
+
+// Create a new bin if one doesn't exist
+async function createBin(): Promise<string> {
+  const response = await fetch(JSONBIN_API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Master-Key': MASTER_KEY!,
+      'X-Bin-Name': 'survey-submissions'
+    },
+    body: JSON.stringify(getInitialData())
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`Failed to create bin: ${response.statusText} - ${errorBody}`);
+  }
+
+  const result = await response.json();
+  const newBinId = result.metadata.id;
+  console.log('Created new JSONBin with ID:', newBinId);
+  return newBinId;
+}
+
+// Read data from JSONBin
+async function readData(): Promise<SubmissionsData> {
+  if (!BIN_ID) {
+    // If no bin ID, return initial data (bin will be created on first POST)
+    return getInitialData();
+  }
+
+  const response = await fetch(`${JSONBIN_API_URL}/${BIN_ID}/latest`, {
+    method: 'GET',
+    headers: {
+      'X-Master-Key': MASTER_KEY!
+    }
+  });
+
+  if (!response.ok) {
+    console.error('Failed to read from JSONBin:', response.statusText);
+    return getInitialData();
+  }
+
+  const result = await response.json();
+  return result.record as SubmissionsData;
+}
+
+// Write data to JSONBin
+async function writeData(data: SubmissionsData, binId?: string): Promise<void> {
+  const targetBinId = binId || BIN_ID;
+  
+  if (!targetBinId) {
+    throw new Error('No bin ID available');
+  }
+
+  const response = await fetch(`${JSONBIN_API_URL}/${targetBinId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Master-Key': MASTER_KEY!
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to write to JSONBin: ${response.statusText}`);
   }
 }
 
 // GET - Retrieve all submissions
 export async function GET() {
   try {
-    const data = await ensureDataFile();
+    if (!MASTER_KEY) {
+      return NextResponse.json({ error: 'X_MASTER_KEY not configured' }, { status: 500 });
+    }
+
+    const data = await readData();
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error reading submissions:', error);
@@ -46,6 +112,10 @@ export async function GET() {
 // POST - Add a new submission
 export async function POST(request: NextRequest) {
   try {
+    if (!MASTER_KEY) {
+      return NextResponse.json({ error: 'X_MASTER_KEY not configured' }, { status: 500 });
+    }
+
     const body = await request.json();
     const { ratings } = body;
 
@@ -53,7 +123,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid ratings data' }, { status: 400 });
     }
 
-    const data = await ensureDataFile();
+    let currentBinId = BIN_ID;
+    
+    // Create bin if it doesn't exist
+    if (!currentBinId) {
+      currentBinId = await createBin();
+    }
+
+    const data = await readData();
     
     const newSubmission: Submission = {
       id: `sub_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -65,7 +142,7 @@ export async function POST(request: NextRequest) {
     data.totalCount = data.submissions.length;
     data.lastUpdated = new Date().toISOString();
 
-    await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2));
+    await writeData(data, currentBinId);
 
     return NextResponse.json({ 
       success: true, 
@@ -81,13 +158,16 @@ export async function POST(request: NextRequest) {
 // DELETE - Reset all submissions
 export async function DELETE() {
   try {
-    const resetData: SubmissionsData = {
-      submissions: [],
-      totalCount: 0,
-      lastUpdated: new Date().toISOString()
-    };
+    if (!MASTER_KEY) {
+      return NextResponse.json({ error: 'X_MASTER_KEY not configured' }, { status: 500 });
+    }
 
-    await fs.writeFile(DATA_FILE, JSON.stringify(resetData, null, 2));
+    if (!BIN_ID) {
+      return NextResponse.json({ error: 'No bin configured to reset' }, { status: 400 });
+    }
+
+    const resetData = getInitialData();
+    await writeData(resetData);
 
     return NextResponse.json({ 
       success: true, 
