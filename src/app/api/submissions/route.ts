@@ -97,8 +97,22 @@ async function writeData(data: SubmissionsData, binId?: string): Promise<void> {
 // GET - Retrieve all submissions
 export async function GET() {
   try {
+    // Debug logging for Vercel
+    console.log('ENV CHECK - MASTER_KEY exists:', !!MASTER_KEY);
+    console.log('ENV CHECK - BIN_ID:', BIN_ID || 'NOT SET');
+    
     if (!MASTER_KEY) {
-      return NextResponse.json({ error: 'X_MASTER_KEY not configured' }, { status: 500 });
+      return NextResponse.json({ error: 'JSONBIN_ACCESS_KEY not configured' }, { status: 500 });
+    }
+
+    if (!BIN_ID) {
+      return NextResponse.json({ 
+        error: 'JSONBIN_BIN_ID not configured',
+        debug: {
+          masterKeyExists: !!MASTER_KEY,
+          binId: BIN_ID || 'undefined'
+        }
+      }, { status: 500 });
     }
 
     const data = await readData();
