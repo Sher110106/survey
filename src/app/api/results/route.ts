@@ -2,10 +2,16 @@ import { NextResponse } from 'next/server';
 import { ideas } from '@/data/ideas';
 import { categories, DEFAULT_SCORE } from '@/data/categories';
 
-// JSONBin.io configuration
 const JSONBIN_API_URL = 'https://api.jsonbin.io/v3/b';
-const MASTER_KEY = process.env.JSONBIN_ACCESS_KEY;
-const BIN_ID = process.env.JSONBIN_BIN_ID;
+
+// Helper to clean environment variables
+const cleanEnvVar = (val: string | undefined): string | undefined => {
+  if (!val) return undefined;
+  return val.trim().replace(/^["']|["']$/g, '').replace(/\\/g, '');
+};
+
+const MASTER_KEY = cleanEnvVar(process.env.JSONBIN_ACCESS_KEY);
+const BIN_ID = cleanEnvVar(process.env.JSONBIN_BIN_ID);
 
 interface Submission {
   id: string;

@@ -1,12 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// JSONBin.io configuration
 const JSONBIN_API_URL = 'https://api.jsonbin.io/v3/b';
-const MASTER_KEY = process.env.JSONBIN_ACCESS_KEY;
 
-// You'll need to create a bin first and set this, or we'll create one automatically
-// After first run, set this in .env.local as JSONBIN_BIN_ID
-const BIN_ID = process.env.JSONBIN_BIN_ID;
+// Helper to clean environment variables (removes accidental quotes, backslashes, and whitespace)
+const cleanEnvVar = (val: string | undefined): string | undefined => {
+  if (!val) return undefined;
+  // Remove wrapping quotes and any leading/trailing whitespace
+  return val.trim().replace(/^["']|["']$/g, '').replace(/\\/g, '');
+};
+
+const RAW_MASTER_KEY = process.env.JSONBIN_ACCESS_KEY;
+const MASTER_KEY = cleanEnvVar(RAW_MASTER_KEY);
+
+const RAW_BIN_ID = process.env.JSONBIN_BIN_ID;
+const BIN_ID = cleanEnvVar(RAW_BIN_ID);
 
 interface Submission {
   id: string;
@@ -100,24 +107,25 @@ export async function GET() {
   try {
     // Detailed debug logging for Vercel
     const maskedKey = MASTER_KEY ? `${MASTER_KEY.substring(0, 5)}...${MASTER_KEY.substring(MASTER_KEY.length - 5)}` : 'NOT_SET';
-    const cleanBinId = BIN_ID?.trim().replace(/['"]/g, '');
-    const fetchUrl = `${JSONBIN_API_URL}/${cleanBinId}/latest`;
+    const fetchUrl = `${JSONBIN_API_URL}/${BIN_ID}/latest`;
     
-    console.log('DEBUG - MASTER_KEY (masked):', maskedKey);
-    console.log('DEBUG - BIN_ID raw:', BIN_ID || 'NOT_SET');
-    console.log('DEBUG - BIN_ID clean:', cleanBinId || 'NOT_SET');
+    console.log('DEBUG - MASTER_KEY (cleaned):', maskedKey);
+    console.log('DEBUG - BIN_ID (cleaned):', BIN_ID || 'NOT_SET');
     console.log('DEBUG - Fetch URL:', fetchUrl);
     
     if (!MASTER_KEY) {
-      return NextResponse.json({ error: 'JSONBIN_ACCESS_KEY not configured' }, { status: 500 });
+      return NextResponse.json({ 
+        error: 'JSONBIN_ACCESS_KEY not configured',
+        debug: { rawKeyExists: !!RAW_MASTER_KEY }
+      }, { status: 500 });
     }
 
-    if (!cleanBinId) {
+    if (!BIN_ID) {
       return NextResponse.json({ 
         error: 'JSONBIN_BIN_ID not configured',
         debug: {
           masterKeyMasked: maskedKey,
-          binId: BIN_ID || 'undefined'
+          rawBinId: RAW_BIN_ID || 'undefined'
         }
       }, { status: 500 });
     }
@@ -128,7 +136,7 @@ export async function GET() {
     return NextResponse.json({
       ...data,
       _debug: {
-        binIdUsed: cleanBinId,
+        binIdUsed: BIN_ID,
         masterKeyMasked: maskedKey,
         masterKeyLength: MASTER_KEY?.length,
         fetchUrl: fetchUrl
